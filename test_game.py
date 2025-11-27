@@ -1,4 +1,10 @@
+# tests/test_game.py
+import random
+import pygame
 from game import Game
+from alien import Alien, MysteryShip
+from spaceship import Spaceship
+from laser import Laser
 
 def test_initialization(game: Game):
     assert game.screen_width == 750
@@ -65,3 +71,32 @@ def test_check_for_collisions_laser_hits_mystery(game: Game):
 
     assert ship not in game.mystery_ship_group
     assert game.score == pre_score + 500
+
+def test_game_over_and_reset(game: Game):
+    game.lives = 0
+    game.game_over()
+    assert game.run is False
+    game.reset()
+    assert game.run is True
+    assert game.lives == 3
+    assert len(game.aliens_group) == 55
+    assert len(game.alien_lasers_group) == 0
+    assert len(game.mystery_ship_group) == 0
+    assert len(game.obstacles) == 4
+    assert game.score == 0
+
+def test_highscore_persistence(tmp_path, game: Game):
+    game.score = 1200
+    game.check_for_highscore()
+
+    tmp_file = tmp_path / "highscore.txt"
+    with open(tmp_file, "r") as f:
+        stored = int(f.read())
+    assert stored == 1200
+
+def test_laser_update_kill():
+    laser = Laser(position=(0, 0), speed=5, screen_height=700)
+
+    for _ in range(200):
+        laser.update()
+    assert not laser.alive()

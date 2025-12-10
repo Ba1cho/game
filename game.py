@@ -28,6 +28,16 @@ class Game:
 		pygame.mixer.music.load("Sounds/music.ogg")
 		pygame.mixer.music.play(-1)
 
+	def create_obstacles(self):
+		obstacle_width = len(grid[0]) * 3
+		gap = (self.screen_width + self.offset - (4 * obstacle_width))/5
+		obstacles = []
+		for i in range(4):
+			offset_x = (i + 1) * gap + i * obstacle_width
+			obstacle = Obstacle(offset_x, self.screen_height - 100)
+			obstacles.append(obstacle)
+		return obstacles
+
 	def create_aliens(self):
 		for row in range(5):
 			for column in range(11):

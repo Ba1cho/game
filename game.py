@@ -41,3 +41,8 @@ class Game():
 		if self.aliens:
 			for alien in self.aliens.sprites():
 				alien.rect.y += distance
+	def alien_shoot_laser(self):
+		if self.aliens.sprites():
+			random_alien = random.choice(self.aliens.sprites())
+			laser_sprite = Laser(random_alien.rect.center, -6, self.screen_height)
+			self.alien_lasers.add(laser_sprite)

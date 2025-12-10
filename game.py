@@ -26,3 +26,30 @@ class Game():
 				else:
 					alien_sprite = Alien(1, 75 + x, 80 + y)
 				self.aliens.add(alien_sprite)
+	def game_over(self):
+		self.run = False
+
+	def reset(self):
+		self.run = True
+		self.lives = 3
+		self.spaceship_group.sprite.reset()
+		self.aliens_group.empty()
+		self.alien_lasers_group.empty()
+		self.create_aliens()
+		self.mystery_ship_group.empty()
+		self.obstacles = self.create_obstacles()
+		self.score = 0
+
+	def check_for_highscore(self):
+		if self.score > self.highscore:
+			self.highscore = self.score
+
+			with open("highscore.txt", "w") as file:
+				file.write(str(self.highscore))
+
+	def load_highscore(self):
+		try:
+			with open("highscore.txt", "r") as file:
+				self.highscore = int(file.read())
+		except FileNotFoundError:
+			self.highscore = 0

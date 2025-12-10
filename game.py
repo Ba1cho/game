@@ -1,20 +1,32 @@
-import pygame
+import pygame, random
 from spaceship import Spaceship
-from alien import Alien
 from obstacle import Obstacle
+from obstacle import grid
+from alien import Alien
+from laser import Laser
+from alien import MysteryShip
 
-class Game():
-	def __init__(self, screen_width, screen_height):
-		self.spaceship = pygame.sprite.GroupSingle()
-		self.spaceship.add(Spaceship(screen_width, screen_height))
-		self.obstacle_1 = Obstacle(screen_width/4 - 128,screen_height - 100)
-		self.obstacle_2 = Obstacle((screen_width/4)*2 - 128,screen_height - 100)
-		self.obstacle_3 = Obstacle((screen_width/4)*3 - 128,screen_height - 100)
-		self.obstacle_4 = Obstacle((screen_width/4)*4 - 128,screen_height - 100)
-		self.aliens = pygame.sprite.Group()
-		self.alien_direction = 1
+class Game:
+	def __init__(self, screen_width, screen_height, offset):
 		self.screen_width = screen_width
+		self.screen_height = screen_height
+		self.offset = offset
+		self.spaceship_group = pygame.sprite.GroupSingle()
+		self.spaceship_group.add(Spaceship(self.screen_width, self.screen_height, self.offset))
+		self.obstacles = self.create_obstacles()
+		self.aliens_group = pygame.sprite.Group()
 		self.create_aliens()
+		self.aliens_direction = 1
+		self.alien_lasers_group = pygame.sprite.Group()
+		self.mystery_ship_group = pygame.sprite.GroupSingle()
+		self.lives = 3
+		self.run = True
+		self.score = 0
+		self.highscore = 0
+		self.explosion_sound = pygame.mixer.Sound("Sounds/explosion.ogg")
+		self.load_highscore()
+		pygame.mixer.music.load("Sounds/music.ogg")
+		pygame.mixer.music.play(-1)
 
 	def create_aliens(self):
 		for row in range(5):
@@ -27,35 +39,6 @@ class Game():
 				elif row in (1,2):
 					alien_type = 2
 				else:
-					alien_sprite = Alien(1, 75 + x, 80 + y)
-				self.aliens.add(alien_sprite)
-	def game_over(self):
-		self.run = False
-
-	def reset(self):
-		self.run = True
-		self.lives = 3
-		self.spaceship_group.sprite.reset()
-		self.aliens_group.empty()
-		self.alien_lasers_group.empty()
-		self.create_aliens()
-		self.mystery_ship_group.empty()
-		self.obstacles = self.create_obstacles()
-		self.score = 0
-
-	def check_for_highscore(self):
-		if self.score > self.highscore:
-			self.highscore = self.score
-
-			with open("highscore.txt", "w") as file:
-				file.write(str(self.highscore))
-
-	def load_highscore(self):
-		try:
-			with open("highscore.txt", "r") as file:
-				self.highscore = int(file.read())
-		except FileNotFoundError:
-			self.highscore = 0
 					alien_type = 1
 
 				alien = Alien(alien_type, x + self.offset/2, y)
@@ -131,3 +114,30 @@ class Game():
 				if pygame.sprite.spritecollide(alien, self.spaceship_group, False):
 					self.game_over()
 
+	def game_over(self):
+		self.run = False
+
+	def reset(self):
+		self.run = True
+		self.lives = 3
+		self.spaceship_group.sprite.reset()
+		self.aliens_group.empty()
+		self.alien_lasers_group.empty()
+		self.create_aliens()
+		self.mystery_ship_group.empty()
+		self.obstacles = self.create_obstacles()
+		self.score = 0
+
+	def check_for_highscore(self):
+		if self.score > self.highscore:
+			self.highscore = self.score
+
+			with open("highscore.txt", "w") as file:
+				file.write(str(self.highscore))
+
+	def load_highscore(self):
+		try:
+			with open("highscore.txt", "r") as file:
+				self.highscore = int(file.read())
+		except FileNotFoundError:
+			self.highscore = 0

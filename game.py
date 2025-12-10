@@ -26,3 +26,12 @@ class Game():
 				else:
 					alien_sprite = Alien(1, 75 + x, 80 + y)
 				self.aliens.add(alien_sprite)
+	def alien_position_checker(self):
+		alien_sprites = self.aliens.sprites()
+		for alien in alien_sprites:
+			if alien.rect.right >= self.screen_width:
+				self.alien_direction = -1
+				self.alien_move_down(2) 
+			elif alien.rect.left <= 0:
+				self.alien_direction = 1
+				self.alien_move_down(2)

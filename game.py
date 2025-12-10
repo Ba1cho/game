@@ -12,6 +12,8 @@ class Game():
 		self.obstacle_3 = Obstacle((screen_width/4)*3 - 128,screen_height - 100)
 		self.obstacle_4 = Obstacle((screen_width/4)*4 - 128,screen_height - 100)
 		self.aliens = pygame.sprite.Group()
+		self.alien_direction = 1
+		self.screen_width = screen_width
 		self.create_aliens()
 
 	def create_aliens(self):
@@ -35,3 +37,7 @@ class Game():
 			elif alien.rect.left <= 0:
 				self.alien_direction = 1
 				self.alien_move_down(2)
+	def alien_move_down(self, distance):
+		if self.aliens:
+			for alien in self.aliens.sprites():
+				alien.rect.y += distance
